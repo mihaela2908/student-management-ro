@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChakraProvider, Flex, Box } from '@chakra-ui/react';
-import Sidebar from './Sidebar/Sidebar';
+import StudentsSidebar from './Sidebar/StudentsSidebar';
 import MainPanel from './MainPanel/MainPanel';
+import ResizableHandle from './ResizableDrawer/ResizableHandle';
 import { mockStudents } from './data/mockData';
 import theme from './theme';
 
@@ -119,7 +120,7 @@ function App() {
                         maxWidth={isDrawerOpen ? "70%" : "100%"}
                         boxShadow={isDrawerOpen ? "2px 0 8px rgba(0,0,0,0.05)" : "none"}
                     >
-                        <Sidebar
+                        <StudentsSidebar
                             students={mockStudents}
                             searchTerm={searchTerm}
                             onSearchChange={handleSearchChange}
@@ -129,35 +130,17 @@ function App() {
                         />
                     </Box>
 
-                    {/* Separator de redimensionare */}
+                    {/* Elegant Resize Handle */}
                     {isDrawerOpen && !isMobile && (
                         <Box
+                            position="relative"
                             width="6px"
                             height="100%"
-                            bg={isDragging ? "blue.400" : "gray.300"}
-                            cursor="col-resize"
-                            position="relative"
-                            onMouseDown={startDragging}
-                            _hover={{ bg: "blue.300" }}
-                            transition="background-color 0.2s"
                             display="flex"
                             alignItems="center"
                             justifyContent="center"
                         >
-                            {/* Indicator de drag */}
-                            <Box
-                                width="2px"
-                                height="30px"
-                                bg="white"
-                                borderRadius="1px"
-                                mr="1px"
-                            />
-                            <Box
-                                width="2px"
-                                height="30px"
-                                bg="white"
-                                borderRadius="1px"
-                            />
+                            <ResizableHandle onMouseDown={startDragging} />
                         </Box>
                     )}
 
