@@ -1,34 +1,33 @@
-// src/MainPanel/MainPanel.jsx
+// src/MainPanel/MainPanel.js
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
     Box,
     Flex,
-    HStack,
     VStack,
     Text,
     Avatar,
-    IconButton,
     Badge,
     Button,
-    useToast,
-    Divider
+    IconButton,
+    Divider,
+    Card,
+    CardBody,
+    Stat,
+    StatLabel,
+    StatNumber,
+    StatHelpText,
+    Heading,
+    Container,
+    useColorModeValue
 } from '@chakra-ui/react';
-import {
-    ArrowBackIcon,
-    CloseIcon,
-    EditIcon,
-    StarIcon,
-    CopyIcon,
-} from '@chakra-ui/icons';
+import { CloseIcon, EmailIcon, PhoneIcon, CalendarIcon, EditIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 
 const MainPanel = ({ student, onClose, isOpen }) => {
-    const [isStarred, setIsStarred] = useState(false);
-    const toast = useToast();
+    // Hooks must be called before any early returns
+    const bgColor = useColorModeValue('white', 'gray.800');
+    const borderColor = useColorModeValue('gray.200', 'gray.600');
 
-    if (!student) return null;
-
-    // Format date
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('ro-RO', {
             year: 'numeric',
@@ -37,303 +36,268 @@ const MainPanel = ({ student, onClose, isOpen }) => {
         });
     };
 
-    // Copy to clipboard
-    const copyToClipboard = (text, type) => {
-        navigator.clipboard.writeText(text).then(() => {
-            toast({
-                title: `${type} copiat!`,
-                status: 'success',
-                duration: 2000,
-                isClosable: true,
-                position: 'bottom-right',
-            });
-        });
+    const getStatusColor = (status) => {
+        return status === 'active' ? 'green' : 'orange';
     };
 
-    // Get avatar color
-    const getAvatarColor = () => {
-        const colors = ['purple.500', 'blue.500', 'teal.500', 'green.500'];
-        const index = (student.firstName.charCodeAt(0) + student.lastName.charCodeAt(0)) % colors.length;
-        return colors[index];
+    const getStatusText = (status) => {
+        return status === 'active' ? 'Activ' : 'Inactiv';
     };
+
+    if (!student || !isOpen) return null;
 
     return (
         <Box
-            h="100vh"
-            bg="white"
+            height="100%"
+            width="100%"
+            bg={bgColor}
+            overflow="hidden"
             display="flex"
             flexDirection="column"
-            opacity={isOpen ? 1 : 0}
-            transition="opacity 0.3s"
         >
             {/* Header */}
-            <Flex
-                px={6}
-                py={4}
-                align="center"
-                justify="space-between"
-                borderBottom="1px"
-                borderColor="gray.200"
+            <Box
+                p={6}
+                borderBottom="1px solid"
+                borderColor={borderColor}
                 bg="white"
+                boxShadow="sm"
             >
-                <HStack spacing={3}>
+                <Flex justify="space-between" align="center" mb={4}>
+                    <Heading size="lg" color="brand.700">
+                        Detalii Student
+                    </Heading>
                     <IconButton
-                        icon={<ArrowBackIcon />}
-                        variant="ghost"
+                        aria-label="Închide panoul"
+                        icon={<CloseIcon />}
                         size="sm"
-                        aria-label="Back"
+                        variant="ghost"
                         onClick={onClose}
                     />
-                    <Avatar
-                        size="md"
-                        name={`${student.firstName} ${student.lastName}`}
-                        bg={getAvatarColor()}
-                    />
-                    <Text fontSize="lg" fontWeight="600" color="gray.800">
-                        {student.firstName} {student.lastName}
-                    </Text>
-                    <IconButton
-                        icon={<StarIcon />}
-                        variant="ghost"
-                        size="sm"
-                        color={isStarred ? "yellow.400" : "gray.400"}
-                        onClick={() => setIsStarred(!isStarred)}
-                        aria-label="Favorite"
-                    />
-                </HStack>
+                </Flex>
 
-                <IconButton
-                    icon={<CloseIcon />}
-                    variant="ghost"
-                    size="sm"
-                    onClick={onClose}
-                    aria-label="Close"
-                />
-            </Flex>
+                <Flex align="center" gap={4}>
+                    <Avatar
+                        size="xl"
+                        name={`${student.firstName} ${student.lastName}`}
+                        src={student.profilePic}
+                        border="4px solid"
+                        borderColor="brand.100"
+                    />
+                    <Box>
+                        <Text fontSize="2xl" fontWeight="bold" mb={2}>
+                            {student.firstName} {student.lastName}
+                        </Text>
+                        <Flex gap={3} align="center">
+                            <Badge
+                                colorScheme={getStatusColor(student.status)}
+                                variant="solid"
+                                px={3}
+                                py={1}
+                                rounded="full"
+                                fontSize="sm"
+                            >
+                                {getStatusText(student.status)}
+                            </Badge>
+                            <Text color="gray.600" fontSize="lg">
+                                {student.faculty} • Anul {student.year}
+                            </Text>
+                        </Flex>
+                    </Box>
+                </Flex>
+            </Box>
 
             {/* Content */}
-            <Box
-                flex="1"
-                overflowY="auto"
-                px={8}
-                py={6}
-                css={{
-                    '&::-webkit-scrollbar': {
-                        width: '6px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                        background: '#f1f3f5',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                        background: '#cbd5e0',
-                        borderRadius: '3px',
-                    },
-                }}
-            >
-                <VStack spacing={8} align="stretch">
-                    {/* Personal Information Section */}
-                    <Box>
-                        <Flex align="center" justify="space-between" mb={6}>
-                            <Text fontSize="lg" fontWeight="600" color="gray.800">
-                                Informații Personale
-                            </Text>
-                            <IconButton
-                                icon={<EditIcon />}
-                                variant="ghost"
-                                size="sm"
-                                aria-label="Edit"
-                            />
-                        </Flex>
+            <Box flex="1" overflow="auto" p={6}>
+                <Container maxW="full" p={0}>
+                    <VStack spacing={6} align="stretch">
+                        {/* Contact Information */}
+                        <Card>
+                            <CardBody>
+                                <VStack spacing={4} align="stretch">
+                                    <Heading size="md" color="brand.700" mb={2}>
+                                        Informații de Contact
+                                    </Heading>
 
-                        <VStack spacing={4} align="stretch">
-                            <HStack justify="space-between">
-                                <Box flex="1">
-                                    <Text fontSize="xs" color="gray.500" mb={1}>
-                                        Nume complet
-                                    </Text>
-                                    <Text fontSize="sm" color="gray.800">
-                                        {student.firstName} {student.lastName}
-                                    </Text>
-                                </Box>
-                                <Box flex="1">
-                                    <Text fontSize="xs" color="gray.500" mb={1}>
-                                        Email
-                                    </Text>
-                                    <HStack spacing={2}>
-                                        <Text fontSize="sm" color="gray.800">
-                                            {student.email}
+                                    <Flex align="center" gap={3}>
+                                        <EmailIcon color="brand.500" w={5} h={5} />
+                                        <Box>
+                                            <Text fontSize="sm" color="gray.600">Email</Text>
+                                            <Text fontWeight="medium" color="blue.600" cursor="pointer">
+                                                {student.email}
+                                            </Text>
+                                        </Box>
+                                    </Flex>
+
+                                    <Flex align="center" gap={3}>
+                                        <PhoneIcon color="brand.500" w={5} h={5} />
+                                        <Box>
+                                            <Text fontSize="sm" color="gray.600">Telefon</Text>
+                                            <Text fontWeight="medium">{student.phone}</Text>
+                                        </Box>
+                                    </Flex>
+
+                                    <Flex align="center" gap={3}>
+                                        <Box w={5} h={5} bg="brand.500" rounded="sm" />
+                                        <Box>
+                                            <Text fontSize="sm" color="gray.600">Adresa</Text>
+                                            <Text fontWeight="medium">{student.address}</Text>
+                                        </Box>
+                                    </Flex>
+                                </VStack>
+                            </CardBody>
+                        </Card>
+
+                        {/* Academic Information */}
+                        <Card>
+                            <CardBody>
+                                <VStack spacing={4} align="stretch">
+                                    <Heading size="md" color="brand.700" mb={2}>
+                                        Informații Academice
+                                    </Heading>
+
+                                    <Flex justify="space-between" wrap="wrap" gap={4}>
+                                        <Stat>
+                                            <StatLabel>Facultatea</StatLabel>
+                                            <StatNumber fontSize="lg">{student.faculty}</StatNumber>
+                                        </Stat>
+                                        <Stat>
+                                            <StatLabel>Anul de studiu</StatLabel>
+                                            <StatNumber fontSize="lg">Anul {student.year}</StatNumber>
+                                        </Stat>
+                                    </Flex>
+
+                                    <Flex justify="space-between" wrap="wrap" gap={4}>
+                                        <Stat>
+                                            <StatLabel>Media generală</StatLabel>
+                                            <StatNumber
+                                                fontSize="3xl"
+                                                color={student.gpa >= 9 ? 'green.500' :
+                                                    student.gpa >= 8 ? 'yellow.500' : 'red.500'}
+                                            >
+                                                {student.gpa}
+                                            </StatNumber>
+                                            <StatHelpText>
+                                                {student.gpa >= 9 ? 'Excelent' :
+                                                    student.gpa >= 8 ? 'Foarte Bine' :
+                                                        student.gpa >= 7 ? 'Bine' : 'Satisfăcător'}
+                                            </StatHelpText>
+                                        </Stat>
+                                        <Stat>
+                                            <StatLabel>Data înscrierii</StatLabel>
+                                            <StatNumber fontSize="lg">
+                                                {formatDate(student.enrollmentDate)}
+                                            </StatNumber>
+                                            <StatHelpText>
+                                                <CalendarIcon mr={1} />
+                                                {Math.floor((new Date() - new Date(student.enrollmentDate)) / (1000 * 60 * 60 * 24 * 365))} ani de studiu
+                                            </StatHelpText>
+                                        </Stat>
+                                    </Flex>
+                                </VStack>
+                            </CardBody>
+                        </Card>
+
+                        {/* Current Courses */}
+                        <Card>
+                            <CardBody>
+                                <VStack spacing={4} align="stretch">
+                                    <Heading size="md" color="brand.700" mb={2}>
+                                        Cursuri Curente
+                                    </Heading>
+
+                                    {student.courses?.map((course, index) => (
+                                        <Box
+                                            key={index}
+                                            p={4}
+                                            bg="brand.50"
+                                            rounded="md"
+                                            borderLeft="4px"
+                                            borderLeftColor="brand.500"
+                                            transition="all 0.2s"
+                                            _hover={{ bg: "brand.100", transform: "translateX(4px)" }}
+                                        >
+                                            <Flex justify="space-between" align="center">
+                                                <Text fontWeight="medium" fontSize="md">
+                                                    {course}
+                                                </Text>
+                                                <IconButton
+                                                    aria-label="Vezi detalii curs"
+                                                    icon={<ExternalLinkIcon />}
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    color="brand.600"
+                                                />
+                                            </Flex>
+                                        </Box>
+                                    ))}
+                                </VStack>
+                            </CardBody>
+                        </Card>
+
+                        {/* Observations */}
+                        <Card>
+                            <CardBody>
+                                <VStack spacing={4} align="stretch">
+                                    <Heading size="md" color="brand.700" mb={2}>
+                                        Observații și Note
+                                    </Heading>
+                                    <Box
+                                        p={4}
+                                        bg="gray.50"
+                                        rounded="md"
+                                        border="1px solid"
+                                        borderColor="gray.200"
+                                    >
+                                        <Text color="gray.700" lineHeight="tall">
+                                            {student.observations}
                                         </Text>
-                                        <IconButton
-                                            icon={<CopyIcon />}
-                                            size="xs"
-                                            variant="ghost"
-                                            onClick={() => copyToClipboard(student.email, 'Email')}
-                                            aria-label="Copy email"
-                                        />
-                                    </HStack>
-                                </Box>
-                            </HStack>
+                                    </Box>
+                                </VStack>
+                            </CardBody>
+                        </Card>
 
-                            <HStack justify="space-between">
-                                <Box flex="1">
-                                    <Text fontSize="xs" color="gray.500" mb={1}>
-                                        Data nașterii
-                                    </Text>
-                                    <Text fontSize="sm" color="gray.800">
-                                        🎂 {formatDate(student.birthDate)}
-                                    </Text>
-                                </Box>
-                                <Box flex="1">
-                                    <Text fontSize="xs" color="gray.500" mb={1}>
-                                        Telefon
-                                    </Text>
-                                    <HStack spacing={2}>
-                                        <Text fontSize="sm" color="gray.800">
-                                            {student.phone}
-                                        </Text>
-                                        <IconButton
-                                            icon={<CopyIcon />}
-                                            size="xs"
-                                            variant="ghost"
-                                            onClick={() => copyToClipboard(student.phone, 'Telefon')}
-                                            aria-label="Copy phone"
-                                        />
-                                    </HStack>
-                                </Box>
-                            </HStack>
-
-                            <HStack justify="space-between">
-                                <Box flex="1">
-                                    <Text fontSize="xs" color="gray.500" mb={1}>
-                                        Status
-                                    </Text>
-                                    <Badge
-                                        colorScheme={student.status === 'active' ? 'green' : 'yellow'}
-                                        px={2}
-                                        py={1}
-                                    >
-                                        {student.status === 'active' ? 'ACTIV' : 'INACTIV'}
-                                    </Badge>
-                                </Box>
-                                <Box flex="1">
-                                    <Text fontSize="xs" color="gray.500" mb={1}>
-                                        Înscris din
-                                    </Text>
-                                    <Text fontSize="sm" color="gray.800">
-                                        📅 {formatDate(student.enrollmentDate)}
-                                    </Text>
-                                </Box>
-                            </HStack>
-                        </VStack>
-                    </Box>
-
-                    <Divider />
-
-                    {/* Academic Information Section */}
-                    <Box>
-                        <Flex align="center" justify="space-between" mb={6}>
-                            <Text fontSize="lg" fontWeight="600" color="gray.800">
-                                Informații Academice
-                            </Text>
-                            <IconButton
-                                icon={<EditIcon />}
-                                variant="ghost"
-                                size="sm"
-                                aria-label="Edit"
-                            />
-                        </Flex>
-
-                        <VStack spacing={4} align="stretch">
-                            <HStack justify="space-between">
-                                <Box flex="1">
-                                    <Text fontSize="xs" color="gray.500" mb={1}>
-                                        Facultatea
-                                    </Text>
-                                    <Text fontSize="sm" color="gray.800">
-                                        {student.faculty}
-                                    </Text>
-                                </Box>
-                                <Box flex="1">
-                                    <Text fontSize="xs" color="gray.500" mb={1}>
-                                        Anul de studiu
-                                    </Text>
-                                    <Text fontSize="sm" color="gray.800">
-                                        Anul {student.year}
-                                    </Text>
-                                </Box>
-                            </HStack>
-
-                            <HStack justify="space-between">
-                                <Box flex="1">
-                                    <Text fontSize="xs" color="gray.500" mb={1}>
-                                        Media generală
-                                    </Text>
-                                    <Text
-                                        fontSize="2xl"
-                                        fontWeight="bold"
-                                        color={student.gpa >= 9 ? 'green.500' : 'blue.500'}
-                                    >
-                                        {student.gpa}
-                                    </Text>
-                                </Box>
-                                <Box flex="1">
-                                    <Text fontSize="xs" color="gray.500" mb={1}>
-                                        Bursă
-                                    </Text>
-                                    <Badge
-                                        colorScheme={student.scholarship ? 'green' : 'gray'}
-                                        px={2}
-                                        py={1}
-                                    >
-                                        {student.scholarship ? 'DA' : 'NU'}
-                                    </Badge>
-                                </Box>
-                            </HStack>
-
-                            <Box>
-                                <Text fontSize="xs" color="gray.500" mb={1}>
-                                    Adresa
-                                </Text>
-                                <Text fontSize="sm" color="gray.800">
-                                    📍 {student.address}
-                                </Text>
-                            </Box>
-                        </VStack>
-                    </Box>
-
-                    <Divider />
-
-                    {/* Courses Section */}
-                    <Box>
-                        <Flex align="center" justify="space-between" mb={4}>
-                            <Text fontSize="lg" fontWeight="600" color="gray.800">
-                                Cursuri Curente
-                            </Text>
-                            <IconButton
-                                icon={<EditIcon />}
-                                variant="ghost"
-                                size="sm"
-                                aria-label="Edit"
-                            />
-                        </Flex>
-
-                        <Flex wrap="wrap" gap={2}>
-                            {student.courses?.map((course, index) => (
-                                <Badge
-                                    key={index}
-                                    colorScheme="blue"
-                                    variant="outline"
-                                    px={3}
-                                    py={1.5}
-                                    borderRadius="full"
-                                    fontSize="xs"
-                                >
-                                    {course.toUpperCase()}
-                                </Badge>
-                            ))}
-                        </Flex>
-                    </Box>
-                </VStack>
+                        {/* Action Buttons */}
+                        <Card>
+                            <CardBody>
+                                <VStack spacing={4}>
+                                    <Heading size="md" color="brand.700">
+                                        Acțiuni Rapide
+                                    </Heading>
+                                    <Flex gap={3} wrap="wrap" justify="center">
+                                        <Button
+                                            leftIcon={<EditIcon />}
+                                            colorScheme="brand"
+                                            variant="solid"
+                                            size="lg"
+                                            minW="150px"
+                                        >
+                                            Editează Profil
+                                        </Button>
+                                        <Button
+                                            leftIcon={<EmailIcon />}
+                                            colorScheme="gray"
+                                            variant="outline"
+                                            size="lg"
+                                            minW="150px"
+                                        >
+                                            Trimite Email
+                                        </Button>
+                                        <Button
+                                            leftIcon={<PhoneIcon />}
+                                            colorScheme="green"
+                                            variant="outline"
+                                            size="lg"
+                                            minW="150px"
+                                        >
+                                            Apelează
+                                        </Button>
+                                    </Flex>
+                                </VStack>
+                            </CardBody>
+                        </Card>
+                    </VStack>
+                </Container>
             </Box>
         </Box>
     );

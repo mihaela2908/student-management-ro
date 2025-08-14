@@ -1,70 +1,55 @@
 // src/ResizableDrawer/ResizableHandle.jsx
 
 import React from 'react';
-import { Box, Flex } from '@chakra-ui/react';
+import { Flex, Box } from '@chakra-ui/react';
 
-const ResizableHandle = ({ onMouseDown, isResizing }) => {
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+const ResizableHandle = (props) => {
     return (
-        <Box
-            position="relative"
-            width="8px"
-            height="100%"
+        <Flex
+            position="absolute"
+            top="calc(50% - 35px)"
+            left="-9px"
+            width="17px"
+            height="50px"
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="center"
+            borderWidth="1px"
+            borderRadius="sm"
+            backgroundColor="white"
             cursor="ew-resize"
-            onMouseDown={onMouseDown}
-            bg={isResizing ? 'blue.100' : 'transparent'}
-            transition="background 0.2s"
-            _hover={{
-                bg: 'blue.50',
-                '&::after': {
-                    opacity: 1
-                }
+            zIndex={999}
+            style={{
+                touchAction: 'none',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                MozUserSelect: 'none',
+                msUserSelect: 'none',
             }}
-            _after={{
-                content: '""',
-                position: 'absolute',
-                left: '3px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                width: '2px',
-                height: '60px',
-                bg: isResizing ? 'blue.500' : 'gray.400',
-                borderRadius: 'full',
-                opacity: isResizing ? 1 : 0,
-                transition: 'all 0.2s'
-            }}
+            {...props}
         >
-            {/* Dots indicator */}
-            <Flex
+            <Box
+                width="2px"
+                backgroundColor="gray.300"
+                height="75%"
+                mr="0.5"
+            />
+            <Box
+                width="2px"
+                backgroundColor="gray.300"
+                height="75%"
+            />
+            <Box
                 position="absolute"
-                left="2px"
-                top="50%"
-                transform="translateY(-50%)"
-                direction="column"
-                gap="3px"
-                opacity={isResizing ? 1 : 0.5}
-                transition="opacity 0.2s"
-                _groupHover={{ opacity: 1 }}
-            >
-                <Box w="2px" h="2px" bg="gray.500" borderRadius="full" />
-                <Box w="2px" h="2px" bg="gray.500" borderRadius="full" />
-                <Box w="2px" h="2px" bg="gray.500" borderRadius="full" />
-                <Box w="2px" h="2px" bg="gray.500" borderRadius="full" />
-                <Box w="2px" h="2px" bg="gray.500" borderRadius="full" />
-            </Flex>
-
-            {/* Active resize line */}
-            {isResizing && (
-                <Box
-                    position="absolute"
-                    left="3px"
-                    top="0"
-                    bottom="0"
-                    width="2px"
-                    bg="blue.500"
-                    borderRadius="full"
-                />
-            )}
-        </Box>
+                top="-30px"
+                bottom="-30px"
+                left="-30px"
+                right="-35px"
+                display={isTouchDevice ? 'block' : 'none'} // The larger touch area for mobile devices is invisible but extends 30px on each side of the visible handle, making it easier to grab on touch screens. This area is only present on mobile devices and smaller screens.
+            />
+        </Flex>
     );
 };
 
