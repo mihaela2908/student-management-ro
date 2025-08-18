@@ -1,4 +1,4 @@
-// src/MainPanel/MainPanel.js
+// src/StudentsDetails/StudentsDetails.js
 
 import React from 'react';
 import {
@@ -23,7 +23,7 @@ import {
 } from '@chakra-ui/react';
 import { CloseIcon, EmailIcon, PhoneIcon, CalendarIcon, EditIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 
-const MainPanel = ({ student, onClose, isOpen }) => {
+const StudentsDetails = ({ student, onClose, isOpen }) => {
     // Hooks must be called before any early returns
     const bgColor = useColorModeValue('white', 'gray.800');
     const borderColor = useColorModeValue('gray.200', 'gray.600');
@@ -303,4 +303,4 @@ const MainPanel = ({ student, onClose, isOpen }) => {
     );
 };
 
-export default MainPanel;
+export default StudentsDetails;

@@ -1,4 +1,4 @@
-// src/Sidebar/StudentsSidebar.jsx
+// src/Sidebar/StudentsPanel.jsx
 
 import React, { useMemo, useState } from 'react';
 import {
@@ -26,7 +26,7 @@ import {
 } from '@chakra-ui/react';
 import { SearchIcon, ChevronDownIcon, ChevronRightIcon } from '@chakra-ui/icons';
 
-const StudentsSidebar = ({
+const StudentsPanel = ({
                              students,
                              searchTerm,
                              onSearchChange,
@@ -565,4 +565,4 @@ const StudentsSidebar = ({
     );
 };
 
-export default StudentsSidebar;
+export default StudentsPanel;

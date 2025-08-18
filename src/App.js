@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChakraProvider, Flex, Box } from '@chakra-ui/react';
-import StudentsSidebar from './Sidebar/StudentsSidebar';
-import MainPanel from './MainPanel/MainPanel';
+import StudentsPanel from './Panel/StudentsPanel';
+import StudentsDetails from './Details/StudentsDetails';
 import ResizableHandle from './ResizableDrawer/ResizableHandle';
 import { mockStudents } from './data/mockData';
 import theme from './theme';
@@ -120,7 +120,7 @@ function App() {
                         maxWidth={isDrawerOpen ? "70%" : "100%"}
                         boxShadow={isDrawerOpen ? "2px 0 8px rgba(0,0,0,0.05)" : "none"}
                     >
-                        <StudentsSidebar
+                        <StudentsPanel
                             students={mockStudents}
                             searchTerm={searchTerm}
                             onSearchChange={handleSearchChange}
@@ -155,7 +155,7 @@ function App() {
                     >
                         {isDrawerOpen && selectedStudent && (
                             <Box width="100%" height="100%" overflow="hidden">
-                                <MainPanel
+                                <StudentsDetails
                                     student={selectedStudent}
                                     onClose={handleDrawerClose}
                                     isOpen={isDrawerOpen}
