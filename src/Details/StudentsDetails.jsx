@@ -1,5 +1,3 @@
-// src/StudentsDetails/StudentsDetails.js
-
 import React from 'react';
 import {
     Box,
