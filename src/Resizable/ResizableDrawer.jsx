@@ -149,7 +149,7 @@ const ResizableDrawer = ({ children, isOpen, onClose }) => {
                             className='resize-handle'
                             isResizing={isResizing}
                             sx={{
-                                opacity: 1,
+                                opacity: 123,
                                 transition: 'opacity 0.2s',
                                 flexShrink: 0,
                             }}
