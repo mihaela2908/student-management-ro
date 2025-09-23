@@ -1,10 +1,10 @@
 // src/App.js
 
-import React, { useState } from 'react';
-import { ChakraProvider, Box, Flex } from '@chakra-ui/react';
-import Sidebar from './Sidebar/Sidebar';
-import MainPanel from './MainPanel/MainPanel';
-import ResizableHandle from './ResizableDrawer/ResizableHandle';
+import React, { useState, useEffect } from 'react';
+import { ChakraProvider, Flex, Box } from '@chakra-ui/react';
+import StudentsPanel from './Panel/StudentsPanel';
+import StudentsDetails from './Details/StudentsDetails';
+import ResizableDrawer from './Resizable/ResizableDrawer';
 import { mockStudents } from './data/mockData';
 import theme from './theme';
 
@@ -12,8 +12,7 @@ function App() {
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [drawerWidth, setDrawerWidth] = useState(600);
-    const [isResizing, setIsResizing] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
     const handleStudentSelect = (student) => {
         setSelectedStudent(student);
@@ -31,56 +30,36 @@ function App() {
         setSearchTerm(value);
     };
 
-    // Handle drawer resize
-    const handleMouseDown = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsResizing(true);
-
-        const startX = e.clientX;
-        const startWidth = drawerWidth;
-
-        const handleMouseMove = (e) => {
-            const deltaX = startX - e.clientX;
-            const newWidth = Math.min(
-                Math.max(startWidth + deltaX, 400),
-                Math.min(1200, window.innerWidth * 0.8)
-            );
-            setDrawerWidth(newWidth);
+    // Resize handler pentru fereastră
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
         };
-
-        const handleMouseUp = () => {
-            setIsResizing(false);
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-            document.body.style.cursor = '';
-            document.body.style.userSelect = '';
-        };
-
-        document.body.style.cursor = 'ew-resize';
-        document.body.style.userSelect = 'none';
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-    };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     return (
         <ChakraProvider theme={theme}>
-            <Flex
-                h="100vh"
-                overflow="hidden"
+            <Box
+                position="fixed"
+                top={0}
+                left={0}
+                right={0}
+                bottom={0}
+                width="100vw"
+                height="100vh"
                 bg="#F5F7FA"
-                position="relative"
+                overflow="hidden"
             >
-                {/* Sidebar - Always visible and interactive */}
+                {/* Sidebar principal - întotdeauna vizibil */}
                 <Box
-                    flex="1"
-                    width={isDrawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%"}
-                    transition={isResizing ? "none" : "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)"}
+                    width="100%"
+                    height="100%"
                     bg="white"
                     position="relative"
-                    overflow="hidden"
                 >
-                    <Sidebar
+                    <StudentsPanel
                         students={mockStudents}
                         searchTerm={searchTerm}
                         onSearchChange={handleSearchChange}
@@ -90,42 +69,20 @@ function App() {
                     />
                 </Box>
 
-                {/* Main Panel Drawer - Slides in from right */}
-                {isDrawerOpen && (
-                    <Box
-                        position="relative"
-                        width={`${drawerWidth}px`}
-                        height="100%"
-                        bg="white"
-                        boxShadow="-4px 0 20px rgba(0,0,0,0.1)"
-                        transition={isResizing ? "none" : "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)"}
-                        display="flex"
-                        flexDirection="row"
-                        overflow="hidden"
-                    >
-                        {/* Resize Handle */}
-                        <ResizableHandle
-                            onMouseDown={handleMouseDown}
-                            isResizing={isResizing}
+                {/* ResizableDrawer pentru detalii student */}
+                <ResizableDrawer
+                    isOpen={isDrawerOpen}
+                    onClose={handleDrawerClose}
+                >
+                    {selectedStudent && (
+                        <StudentsDetails
+                            student={selectedStudent}
+                            onClose={handleDrawerClose}
+                            isOpen={isDrawerOpen}
                         />
-
-                        {/* Main Panel Content */}
-                        <Box
-                            flex="1"
-                            overflow="hidden"
-                            display="flex"
-                            flexDirection="column"
-                        >
-                            <MainPanel
-                                student={selectedStudent}
-                                onClose={handleDrawerClose}
-                                isOpen={isDrawerOpen}
-                                drawerWidth={drawerWidth}
-                            />
-                        </Box>
-                    </Box>
-                )}
-            </Flex>
+                    )}
+                </ResizableDrawer>
+            </Box>
         </ChakraProvider>
     );
 }

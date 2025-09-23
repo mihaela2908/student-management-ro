@@ -4,74 +4,69 @@ import { extendTheme } from '@chakra-ui/react';
 
 const theme = extendTheme({
     colors: {
-        gray: {
-            50: '#F9FAFB',
-            100: '#F7FAFC',
-            200: '#E2E8F0',
-            300: '#CBD5E0',
-            400: '#A0AEC0',
-            500: '#718096',
-            600: '#4A5568',
-            700: '#2D3748',
-            800: '#1A202C',
-            900: '#171923',
+        brand: {
+            50: '#e3f2fd',
+            100: '#bbdefb',
+            200: '#90caf9',
+            300: '#64b5f6',
+            400: '#42a5f5',
+            500: '#2196f3',
+            600: '#1e88e5',
+            700: '#1976d2',
+            800: '#1565c0',
+            900: '#0d47a1',
         },
-        blue: {
-            50: '#EFF6FF',
-            100: '#DBEAFE',
-            200: '#BFDBFE',
-            300: '#93C5FD',
-            400: '#60A5FA',
-            500: '#3B82F6',
-            600: '#2563EB',
-            700: '#1D4ED8',
-            800: '#1E40AF',
-            900: '#1E3A8A',
+        bg: {
+            surface: '#ffffff',
+            accent: {
+                default: '#f8fafc',
+                subtle: '#e2e8f0',
+            }
         }
     },
     fonts: {
-        heading: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif`,
-        body: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif`,
+        heading: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
+        body: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
     },
     styles: {
         global: {
             body: {
-                bg: '#FAFBFC',
+                bg: '#F5F7FA',
                 color: 'gray.800',
             },
-            '*': {
-                boxSizing: 'border-box',
-            }
         },
     },
     components: {
         Button: {
-            baseStyle: {
-                fontWeight: '500',
-                borderRadius: 'lg',
-            },
             defaultProps: {
-                size: 'md',
+                colorScheme: 'brand',
             },
         },
-        Input: {
-            defaultProps: {
-                focusBorderColor: 'blue.500',
-            },
-            baseStyle: {
-                field: {
-                    borderRadius: 'lg',
+        Table: {
+            variants: {
+                simple: {
+                    th: {
+                        borderBottomWidth: '2px',
+                        borderColor: 'gray.200',
+                        backgroundColor: 'gray.50',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                        fontSize: 'xs',
+                        letterSpacing: 'wider',
+                        color: 'gray.700',
+                    },
+                    td: {
+                        borderBottomWidth: '1px',
+                        borderColor: 'gray.100',
+                    },
                 },
             },
         },
         Badge: {
-            baseStyle: {
-                borderRadius: 'full',
-                px: 2,
-                py: 1,
-                fontSize: 'xs',
-                fontWeight: '600',
-                textTransform: 'uppercase',
+            variants: {
+                subtle: {
+                    fontWeight: 'semibold',
+                },
             },
         },
     },
